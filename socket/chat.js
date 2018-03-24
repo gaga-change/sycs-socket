@@ -82,6 +82,7 @@ module.exports = (io) => {
         })
         // 消息发送
         socket.on('chat message', (msg, toUserId, cb) => {
+            console.log('chat message')
             if (!cb) return
             if (addUser && door && msg && toUserId) {
                 db.user.createMsg(socket.userId, msg, socket.oid).then(() => {
