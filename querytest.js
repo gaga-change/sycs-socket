@@ -7,6 +7,8 @@
 // data.getGod(1234).then(row => {
     // console.log(row)
 //  })
-data.createMsg('123', 1, '123').then(row => {
+data.createMsg('123', 1, '123').then(packet => {
     // console.log(row)
+    console.log(packet.insertId)
+
 })

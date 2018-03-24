@@ -9,7 +9,9 @@ io.attach(server)
 
 app.use(express.static(__dirname + '/public'))
 app.use('/api', router)
-
+app.use('*', (req, res) => {
+    res.send('404')
+})
 server.listen('3003', () => {
     console.log(3003)
 })
