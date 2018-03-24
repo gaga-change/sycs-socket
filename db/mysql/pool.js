@@ -13,7 +13,8 @@ module.exports = (sql, values) => {
             if (err) {
                 reject(err)
             } else {
-                connection.query(sql, values, (err, rows) => {
+                connection.query(sql, values, (err, rows, a) => {
+                    console.log(rows, a)
                     if (err) {
                         reject(err)
                     } else {
