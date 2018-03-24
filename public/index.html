@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>总管</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+</head>
+
+<body>
+    <div>
+        <a href="/client.html?orderId=1&userId=1&serviceId=33" target="_black">
+            用户联系客服（订单ID: 1, 用户ID: 1, 客服ID 33）
+        </a>
+        <br>
+        <a href="/client.html?orderId=2&userId=1&serviceId=66" target="_black">
+            用户联系客服（订单ID: 2, 用户ID: 1, 客服ID 66）
+        </a>
+        <br>
+        <a href="/client.html?orderId=3&userId=2&serviceId=66" target="_black">
+            用户联系客服（订单ID: 3, 用户ID: 2, 客服ID 66）
+        </a>
+        <br>
+        <a href="/server.html?serviceId=33&orderId=1">ID为33的客服 订单ID:1</a> <br>
+        <a href="/server.html?serviceId=66&orderId=1">ID为66的客服 订单ID:1</a>
+    </div>
+    <div>用户总数：
+        <span id="UserNum"></span>
+    </div>
+    <h2>用户列表</h2>
+    <ul id="UserList">
+        <!-- <li>
+                <a href="#">用户一</a>
+            </li> -->
+    </ul>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="main.js"></script> -->
+    <script>
+        var socket = io('/chat')
+        var users = []
+        socket.on('users admin', function(data) {
+            changeUserNum(data.numUsers)
+            data.users.forEach(function(item) {
+                addUser(item)
+            })
+        })
+        socket.on('user joined', function (data) {
+            changeUserNum(data.numUsers)
+            addUser(data.user)
+        })
+        socket.on('user left', function (data) {
+            changeUserNum(data.numUsers)
+            removeUser(data.user)
+        })
+        // 显示总人数
+        function changeUserNum(num) {
+            $('#UserNum').text(num)
+        }
+        // 删除退出的用户
+        function removeUser(user) {
+            $('#UserList').find(`[data-id=${user.id}]`).remove()
+        }
+        // 追加用户
+        function addUser(user) {
+            $('#UserList').append(`<li data-id=${user.id}><a href="#">${user.name}&${user.id}</a></li>`)
+        }
+
+    </script>
+</body>
+
+</html>

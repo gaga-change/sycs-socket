@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>5173客服</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+</head>
+
+<body>
+
+    <div>
+        <input type="text" id="messageIpt">
+        <button type="button" id="commitBtn">发送</button>
+    </div>
+    <div id="contain">
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <!-- <script src="main.js"></script> -->
+    <script>
+        var socket = io('/chat')
+        var query = getQuery()
+        socket.emit('service login', query.serviceId, query.orderId)
+
+        $('#commitBtn').click(function () {
+            socket.emit('chat message', $('#messageIpt').val())
+        })
+        socket.on('chat message', msg => {
+            console.log(msg)
+        })
+
+        function getQuery() {
+            let url = location.search
+            let query = url.split('?')[1]
+            let ret = {}
+            if (query) {
+                let keyVal = query.split('&')
+                keyVal.forEach((item) => {
+                    let key = item.split('=')[0]
+                    let val = item.split('=')[1]
+                    if (key) ret[key] = val
+                })
+            }
+            return ret
+        }
+    </script>
+</body>
+
+</html>
