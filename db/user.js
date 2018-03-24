@@ -1,6 +1,15 @@
 const User = require('../class/User')
 const data = require('./mysql')
 
+/**
+ * 获取客服 用户ID
+ * @param {String} serviceQQ
+ */
+exports.getService = (serviceQQ) => {
+    return data.getService(serviceQQ).then(rows => {
+        return rows[0] || null
+    })
+}
 
 /**
  * 连接初始化操作，返回用户ID
