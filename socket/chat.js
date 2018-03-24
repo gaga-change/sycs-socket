@@ -12,6 +12,7 @@ module.exports = (io) => {
         let door = false // 是否打开会话
         // 给当前socket 标识用户
         socket.on('user bind', (userId, cb) => {
+            console.log('user bind')
             if (!cb) return
             if (!addUser && userId) {
                 socket.userId = userId
@@ -28,6 +29,7 @@ module.exports = (io) => {
         })
         // 表示打开会话
         socket.on('open the door', (oid, cb) => {
+            console.log('open the door')
             if (!cb) return
             // 已绑定用户 && 无打开会话
             if (addUser && !door && oid) {
@@ -44,9 +46,6 @@ module.exports = (io) => {
                         err
                     })
                 })
-                cb({
-                    success
-                })
             } else {
                 cb({
                     success: false
@@ -55,6 +54,7 @@ module.exports = (io) => {
         })
         // 表示离开当前会话
         socket.on('close the door', (oid, cb) => {
+            console.log('close the door')
             if (!cb) return
             // 已绑定用户 && 已打开会话
             if (addUser && door && oid) {
@@ -103,7 +103,7 @@ module.exports = (io) => {
         socket.on('disconnect', () => {
             if (addUser) {
                 if (socket.oid) { // 如果已打开会话，则关闭（状态更新）
-                    db.user.clientLeaveConnect(socket.userId, oid)
+                    db.user.clientLeaveConnect(socket.userId, socket.oid)
                 }
             }
         })
