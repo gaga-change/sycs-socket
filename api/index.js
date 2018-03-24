@@ -21,12 +21,7 @@ router.get('/client/connect', (req, res, next) => {
     } else {
         next()
     }
-    // 根据 godId 获取用户（没有就创建用户以及创建连接）
-    // 根据 serviceQQ 获取客服（没有是异常）
-    // db.user.clientConnect(godId, serviceQQ, oid, username)
 })
-
-
 
 // const apiRouter = express.Router()
 // apiRouter.use('/api', router)
