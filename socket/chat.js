@@ -13,7 +13,6 @@ module.exports = (io) => {
         // 给当前socket 标识用户
         socket.on('user bind', (userId, cb) => {
             console.log('user bind')
-            console.log(addUser, userId)
             if (!cb) return
             if (!addUser && userId) {
                 socket.userId = userId
@@ -54,13 +53,13 @@ module.exports = (io) => {
             }
         })
         // 表示离开当前会话
-        socket.on('close the door', (oid, cb) => {
+        socket.on('close the door', (cb) => {
             console.log('close the door')
             if (!cb) return
             // 已绑定用户 && 已打开会话
-            if (addUser && door && oid) {
+            if (addUser && door) {
                 // 更新数据库状态
-                db.user.clientLeaveConnect(socket.userId, oid).then(() => {
+                db.user.clientLeaveConnect(socket.userId, socket.oid).then(() => {
                     door = false
                     socket.oid = null
                     cb({
@@ -117,7 +116,7 @@ module.exports = (io) => {
         // 断开链接，通知离开
         socket.on('disconnect', () => {
             if (addUser) {
-                if (socket.oid) { // 如果已打开会话，则关闭（状态更新）
+                if (door) { // 如果已打开会话，则关闭（状态更新）
                     db.user.clientLeaveConnect(socket.userId, socket.oid)
                 }
             }
