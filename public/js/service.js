@@ -9,7 +9,8 @@
     var userBind = false // 绑定socket状态,绑定后才能打开会话
     var openDoor = false // 会话是否开启，只有开启后才能发送消息
     var rooms = common.LS('SERVICE_ORDERS') || []
-
+    var page = 1 // 页码
+    var pageSize = 29 // 每页条数
     // 发送消息事件
     $('#SendBtn').click(function (e) {
         let msg = $('#MessageInput').val()
@@ -43,37 +44,6 @@
             targetSonNum.text(Number(targetSonNum.text()) + 1) // 未读消息数
         }
     })
-    // 追加消息
-    function appendMyMessage(msg) {
-        let msgEle = $(`<div>
-            <div class="wrap-ip wrap_s">
-                <div class="wrap_fid">
-                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
-                        <i class="arrow"></i>
-                        <div class="hximg-tip">${msg}</div>
-                    </div>
-                </div>
-            </div>
-        </div>`)
-        $('#MessageContainer').append(msgEle)
-    }
-    // 追加其它消息
-    function appendOtherMessage(msg) {
-        let msgEle = $(`<div>
-            <div class="wrap-ip wrap_r">
-                <div class="wrap_img">
-                    <img src="./css/hxinkf-hd.png">
-                </div>
-                <div class="wrap_fid">
-                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
-                        <i class="arrow"></i>
-                        <div class="hximg-tip">${msg}</div>
-                    </div>
-                </div>
-            </div>
-        </div>`)
-        $('#MessageContainer').append(msgEle)
-    }
     // 用户绑定
     socket.emit('user bind', userId, function (userBindRes) {
         if (userBindRes.success) {
@@ -112,18 +82,20 @@
     function saveRooms() {
         common.LS('SERVICE_ORDERS', rooms)
     }
+    // 滚动条移至底部
+    function scrollBottom() {
+        $('.wrap').scrollTop($('.wrap').prop("scrollHeight"))
+    }
     // 拉取消息记录
-    function getMessage() {
+    function getMessage(oid) {
         $.get(common.API + '/message', {
             orderId: oid,
             page,
             pageSize
         }).then(res => {
+            if (oid !== orderId) return // 失效数据
             if (res.success) {
                 let msgArr = res.data.map(item => common.turnKey(item))
-                msgArr.unshift({
-                    msg: "您好，欢迎咨询5173M站。我们的接待时间为早上8: 00 - 次日01: 00"
-                })
                 msgArr.forEach(item => {
                     if (item.userId == userId) {
                         appendMyMessage(item.msg, true)
@@ -131,7 +103,7 @@
                         appendOtherMessage(item.msg, true)
                     }
                 })
-                $('.wrap').scrollTop($('.wrap').prop("scrollHeight"))
+                scrollBottom()
             } else {
                 console.log(res.err)
             }
@@ -151,7 +123,7 @@
             $('#RoomContainer').show()
             let check = rooms.filter(item => item.orderId == orderId)[0]
             menuEle.find('[data-id=msg]').text('') // 最新消息
-             menuEle.find('[data-id=num]').find('small').text('0')
+            menuEle.find('[data-id=num]').find('small').text('0')
             check.num = 0
             saveRooms()
             if (openDoor) {
@@ -174,6 +146,7 @@
                 socket.emit('open the door', orderId, function (openTheDoorRes) {
                     if (openTheDoorRes.success) {
                         console.log('可以发送消息了')
+                        getMessage(orderId)
                         openDoor = true
                     } else {
                         console.log('open the door error', openTheDoorRes.err)
@@ -197,5 +170,45 @@
             $('#MenuLeft').append(newMenu)
         })
     }
-
+    // 追加消息
+    function appendMyMessage(msg, turn) {
+        let msgEle = $(`<div>
+            <div class="wrap-ip wrap_s">
+                <div class="wrap_fid">
+                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
+                        <i class="arrow"></i>
+                        <div class="hximg-tip">${msg}</div>
+                    </div>
+                </div>
+            </div>
+        </div>`)
+        if (turn) {
+            $('#MessageContainer').prepend(msgEle)
+        } else {
+            $('#MessageContainer').append(msgEle)
+        }
+        scrollBottom()
+    }
+    // 追加其它消息
+    function appendOtherMessage(msg, turn) {
+        let msgEle = $(`<div>
+            <div class="wrap-ip wrap_r">
+                <div class="wrap_img">
+                    <img src="./css/hxinkf-hd.png">
+                </div>
+                <div class="wrap_fid">
+                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
+                        <i class="arrow"></i>
+                        <div class="hximg-tip">${msg}</div>
+                    </div>
+                </div>
+            </div>
+        </div>`)
+        if (turn) {
+            $('#MessageContainer').prepend(msgEle)
+        } else {
+            $('#MessageContainer').append(msgEle)
+        }
+        scrollBottom()
+    }
 }())
