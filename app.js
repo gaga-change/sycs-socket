@@ -5,7 +5,7 @@ const router = require('./api')
 const app = express()
 const server = http.Server(app)
 // const io = socketIo(server)
-io.attach(server)
+io.attach(server, { wsEngine: 'ws' })
 
 app.use(express.static(__dirname + '/public'))
 app.use('/api', router)
