@@ -13,7 +13,21 @@
         }
         return ret
     }
+    function turnKey(obj) {
+        let newObj = {}
+        for(let key in obj) {
+            newObj[_turn(key)] = obj[key]
+        }
+        function _turn(key) {
+            return key.replace(/\_(\w)/g, function (all, letter) {
+                return letter.toUpperCase()
+            })
+        }
+        return newObj
+    }
     window.common = {
-        getQuery: getQuery
+        getQuery,
+        turnKey,
+        API: '/api'
     }
 })()

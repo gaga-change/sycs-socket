@@ -95,5 +95,5 @@ exports.createMsg = (userId, msg, oid) => {
  * @param {String} userId 用户ID
  */
 exports.noReadMessageNum = (userId) => {
-    return data.findNoReadMessageNum(userId).then(rows => rows[0])
+    return data.findNoReadMessageNum(userId)
 }
