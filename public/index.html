@@ -39,35 +39,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <!-- <script src="main.js"></script> -->
     <script>
-        var socket = io('/chat')
-        var users = []
-        socket.on('users admin', function(data) {
-            changeUserNum(data.numUsers)
-            data.users.forEach(function(item) {
-                addUser(item)
-            })
-        })
-        socket.on('user joined', function (data) {
-            changeUserNum(data.numUsers)
-            addUser(data.user)
-        })
-        socket.on('user left', function (data) {
-            changeUserNum(data.numUsers)
-            removeUser(data.user)
-        })
-        // 显示总人数
-        function changeUserNum(num) {
-            $('#UserNum').text(num)
-        }
-        // 删除退出的用户
-        function removeUser(user) {
-            $('#UserList').find(`[data-id=${user.id}]`).remove()
-        }
-        // 追加用户
-        function addUser(user) {
-            $('#UserList').append(`<li data-id=${user.id}><a href="#">${user.name}&${user.id}</a></li>`)
-        }
-
     </script>
 </body>
 
