@@ -68,8 +68,17 @@
             })
         }
     })
-    socket.on('chat message', function() {
-        console.log('接收到消息')
+    socket.on('chat message', function(chatMessageRes) {
+        // 接收到自己消息
+        if (chatMessageRes.userId == userId) {
+            if (chatMessageRes.oid == oid) {
+                appendMyMessage(chatMessageRes.msg)
+            } else {
+                console.log('chat message 非当前会话')
+            }
+        } else { // 客服消息
+            console.log('客服消息')
+        }
     })
     // var connect = false // 是否连接成功
     // 触发初始化链接

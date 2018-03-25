@@ -86,12 +86,23 @@ module.exports = (io) => {
             if (!cb) return
             if (addUser && door && msg && toUserId) {
                 db.user.createMsg(socket.userId, msg, socket.oid).then(() => {
-                    chat.to('room ' + toUserId).emit('chat message', msg)
-                    cb({success: true})
+                    chat.to('room ' + toUserId).emit('chat message', {
+                        msg,
+                        userId: socket.userId,
+                        oid: socket.oid
+                    })
+                    socket.broadcast.to('room ' + socket.userId).emit('chat message', {
+                        msg,
+                        userId: socket.userId,
+                        oid: socket.oid
+                    })
+                    cb({
+                        success: true
+                    })
                 }).catch(err => {
                     cb({
                         success: false,
-                        err
+                        err: err.toString()
                     })
                 })
             } else {
