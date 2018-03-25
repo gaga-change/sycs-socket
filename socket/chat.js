@@ -68,11 +68,8 @@ module.exports = (io) => {
                 }).catch(err => {
                     cb({
                         success: false,
-                        err
+                        err: err.toString()
                     })
-                })
-                cb({
-                    success
                 })
             } else {
                 cb({

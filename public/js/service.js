@@ -38,10 +38,26 @@
         } else {
             console.log(chatMessageRes.msg, chatMessageRes.oid, chatMessageRes.userId)
             let target = $('#MenuLeft').find(`[data-oid=${chatMessageRes.oid}]`)
-            target.find('[data-id=msg]').text(chatMessageRes.msg) // 最新消息
-            console.log(target.find('[data-id=msg]'))
-            let targetSonNum = target.find('[data-id=num]').find('small')
-            targetSonNum.text(Number(targetSonNum.text()) + 1) // 未读消息数
+            if (target.get(0)) {
+                target.find('[data-id=msg]').text(chatMessageRes.msg) // 最新消息
+                console.log(target.find('[data-id=msg]'))
+                let targetSonNum = target.find('[data-id=num]').find('small')
+                targetSonNum.text(Number(targetSonNum.text()) + 1) // 未读消息数
+            } else {
+                console.log(chatMessageRes)
+                // { "fromUserId": 16, "fromUsername": "test01", "userId": 1, "orderId": "SYZH20180306-723267143", "num": 0 }
+
+                if (chatMessageRes.userId != userId) {
+                    let newOrder = {
+                        fromUserId: chatMessageRes.userId,
+                        orderId: chatMessageRes.oid,
+                        num: 1
+                    }
+                    appendMenuLaft(newOrder, true)
+                    rooms.unshift(newOrder)
+                    saveRooms()
+                }
+            }
         }
     })
     // 用户绑定
@@ -72,7 +88,7 @@
                     rooms.splice(len - rooms.length)
                 }
                 saveRooms()
-                appendMenuLaft(rooms)
+                rooms.forEach(item => appendMenuLaft(item))
             }
         } else {
             console.log(res.err)
@@ -158,18 +174,21 @@
     /**
      * 追加左侧菜单
      */
-    function appendMenuLaft(items) {
-        items.forEach(item => {
-            let newMenu = $(`<li data-id='oid' data-oid='${item.orderId}' data-user='${item.fromUserId}' data-username='${item.fromUsername}'>
+    function appendMenuLaft(item, turn) {
+        let newMenu = $(`<li data-id='oid' data-oid='${item.orderId}' data-user='${item.fromUserId}' data-username='${item.fromUsername}'>
                     <a href="javascript:void(0)">
                         <div>订单号：<small> ${item.orderId} </small> </div>
                         <div data-id='num'>未读消息： <small>${item.num}</small></div>
                         <small class="msg" data-id='msg'></small>
                     </a>
                 </li>`)
+        if (turn) {
+            $('#MenuLeft').prepend(newMenu)
+        } else {
             $('#MenuLeft').append(newMenu)
-        })
+        }
     }
+
     // 追加消息
     function appendMyMessage(msg, turn) {
         let msgEle = $(`<div>
