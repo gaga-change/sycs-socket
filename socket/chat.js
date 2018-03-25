@@ -86,11 +86,13 @@ module.exports = (io) => {
             if (!cb) return
             if (addUser && door && msg && toUserId) {
                 db.user.createMsg(socket.userId, msg, socket.oid).then(() => {
+                    // 发送消息给指定的人
                     chat.to('room ' + toUserId).emit('chat message', {
                         msg,
                         userId: socket.userId,
                         oid: socket.oid
                     })
+                    // 同用户消息同步
                     socket.broadcast.to('room ' + socket.userId).emit('chat message', {
                         msg,
                         userId: socket.userId,

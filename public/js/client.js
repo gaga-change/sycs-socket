@@ -37,11 +37,41 @@
         }
     })
     // 获取客服ID
-    $.get('/api/service', {serviceQQ: serviceQQ}).then(res => {
+    $.get('/api/service', {
+        serviceQQ: serviceQQ
+    }).then(res => {
         if (res.data) {
             serviceId = res.data.id
         }
-    })        
+    })
+    // 发送消息事件
+    $('#SendBtn').click(function (e) {
+        let msg = $('#MessageInput').val()
+        if (openDoor && serviceId && msg) {
+            socket.emit('chat message', msg, serviceId, function (chatMessageRes) {
+                if (chatMessageRes.success) {
+                    console.log('发送消息成功')
+                    appendMyMessage(msg)
+                } else {
+                    console.log('chat message error', chatMessageRes.err)
+                }
+            })
+        }
+    })
+    // 接收消息
+    socket.on('chat message', function (chatMessageRes) {
+        // 接收到自己消息
+        if (chatMessageRes.userId == userId) {
+            if (chatMessageRes.oid == oid) {
+                appendMyMessage(chatMessageRes.msg)
+            } else {
+                console.log('chat message 非当前会话')
+            }
+        } else { // 客服消息
+            console.log('客服消息')
+        }
+    })
+    // 追加消息
     function appendMyMessage(msg) {
         let msgEle = $(`<div>
             <div class="wrap-ip wrap_s">
@@ -55,39 +85,4 @@
         </div>`)
         $('#MessageContainer').append(msgEle)
     }
-    $('#SendBtn').click(function(e) {
-        let msg = $('#MessageInput').val()
-        if (openDoor && serviceId && msg) {
-            socket.emit('chat message', msg, serviceId, function(chatMessageRes) {
-                if (chatMessageRes.success) {
-                    console.log('发送消息成功')
-                    appendMyMessage(msg)
-                } else {
-                    console.log('chat message error', chatMessageRes.err)
-                }
-            })
-        }
-    })
-    socket.on('chat message', function(chatMessageRes) {
-        // 接收到自己消息
-        if (chatMessageRes.userId == userId) {
-            if (chatMessageRes.oid == oid) {
-                appendMyMessage(chatMessageRes.msg)
-            } else {
-                console.log('chat message 非当前会话')
-            }
-        } else { // 客服消息
-            console.log('客服消息')
-        }
-    })
-    // var connect = false // 是否连接成功
-    // 触发初始化链接
-    // socket.emit('start connect', query.oid, serviceQQ, godId)
-    // // 链接回调
-    // socket.on('start connect', function(oid, to, from) {
-    //     connect = true // 表示链接成功，可以进行发送消息操作
-    //     console.log(oid, to, from)
-    // })
-    // console.log(query)
-
 })()
