@@ -2,51 +2,136 @@
 <html>
 
 <head>
-    <meta charset="utf-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta property="qc:admins" content="340556612151736367">
+    <meta property="wb:webmaster" content="7acb0fd904d782ae">
+
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, minimal-ui">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no, email=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="MobileOptimized" content="320">
     <title>5173客服</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+    <link rel="stylesheet" type="text/css" href="./css/ide_layout.css">
+    <link rel="stylesheet" type="text/css" href="./css/layout-detail.css">
+    <link rel="stylesheet" type="text/css" href="./css/ide_mobile.css">
+    <link rel="stylesheet" href="./css/photoswipe.css">
+    <link rel="stylesheet" href="./css/default-skin.css">
+    <link rel="stylesheet" href="./css/swiper.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/public.css">
+    <link rel="stylesheet" type="text/css" href="./css/huanxin.css">
 </head>
+<style>
+    .menu-left li {
+        display: block;
+        padding: 20px 15px;
+        font-size: 15px;
+        cursor: pointer;
+    }
+    .menu-left small {
+        font-size: 12px;
+        color: rgb(100, 96, 96)
+    }
+    .menu-left li:hover {
+        background: rgb(213, 221, 198);
+    }
+
+    .menu-left li.active {
+        background: rgb(213, 221, 198);
+    }
+</style>
 
 <body>
-
-    <div>
-        <input type="text" id="messageIpt">
-        <button type="button" id="commitBtn">发送</button>
-    </div>
-    <div id="contain">
+    <div style="width: 100%">
+        <div style="width: 33%;position: fixed;top:0;bottom:0;overflow: auto;left:0;background: #ccc">
+            <ul class="menu-left">
+                <li>
+                    <a href="javascript:void(0)">
+                        <div>订单号： 123321</div>
+                        <div>未读消息： 0</div>
+                        <small>消息消息消息</small>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div style="width: 67%;position: fixed;top:0;bottom:0;overflow: auto; right: 0;">
+            <div class="wrap" style="position: relative;display:none" >
+                <div style="position: relative;">
+                    <div class="hwrap" style="top:0" id="MessageContainer">
+                        <div>
+                            <div class="font_span">今天 11:03</div>
+                            <div class="wrap-ip wrap_r">
+                                <div class="wrap_img">
+                                    <img src="./css/hxinkf-hd.png">
+                                </div>
+                                <div class="wrap_fid">
+                                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
+                                        <i class="arrow"></i>
+                                        <div class="hximg-tip">您好，欢迎咨询5173M站。我们的接待时间为早上8:00-次日01:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div>
+                    <div class="font_span">今天 11:07</div>
+                    <div class="wrap-ip wrap_s">
+                        <div class="wrap_fid">
+                            <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
+                                <i class="arrow"></i>
+                                <div class="hximg-tip">123</div>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                    </div>
+                    <div class="footer" style="width: 67%;right:0;left:auto;">
+                        <div class="fot_left">
+                            <div class="wkit-igh"></div>
+                            <input type="file" style="display: none" id="uploadShim" class="hide">
+                        </div>
+                        <div class="fot_right">
+                            <div class="wkit-le">
+                                <input class="inty" type="text" placeholder="说点什么吧..." id="MessageInput">
+                            </div>
+                            <div class="wkit-ri">
+                                <input class="btn_ot" type="button" value="发送" id="SendBtn">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
-    <!-- <script src="main.js"></script> -->
-    <script>
-        var socket = io('/chat')
-        var query = getQuery()
-        socket.emit('service login', query.serviceId, query.orderId)
-
-        $('#commitBtn').click(function () {
-            socket.emit('chat message', $('#messageIpt').val())
-        })
-        socket.on('chat message', msg => {
-            console.log(msg)
-        })
-
-        function getQuery() {
-            let url = location.search
-            let query = url.split('?')[1]
-            let ret = {}
-            if (query) {
-                let keyVal = query.split('&')
-                keyVal.forEach((item) => {
-                    let key = item.split('=')[0]
-                    let val = item.split('=')[1]
-                    if (key) ret[key] = val
-                })
-            }
-            return ret
+    <script src="https://cdn.bootcss.com/socket.io/2.0.4/socket.io.js"></script>
+    <script src="./js/common.js"></script>
+    <script src="./js/service.js"></script>
+    <style>
+        .swiper-slide {
+            margin: 0;
+            width: 100% !important;
         }
-    </script>
+
+        .swiper-container .swiper-pagination {
+            width: 2.5rem;
+        }
+
+        .swiper-container {
+            background: #fff
+        }
+
+        .detail-pic figure {
+            height: 8rem
+        }
+
+        .detail-content .detail-pic a {
+            line-height: 8rem;
+            vertical-align: middle
+        }
+    </style>
+
+
 </body>
 
 </html>
