@@ -102,3 +102,25 @@ exports.findNoReadMessageNum = (user_id) => {
             Count( * ) AS num FROM user_room INNER JOIN message ON message.order_id = user_room.order_id INNER JOIN user
             ON message.user_id = user.id WHERE user_room.user_id = ? AND user_room.socket_num = 0 AND user_room.leave_time < message.time GROUP BY user_room.order_id `, [user_id])
 }
+
+/**
+ * 搜索消息列表
+ * @param {String} order_id 订单ID
+ * @param {Number} start 开始截取的位置
+ * @param {Number} length 截取的长度
+ */
+exports.searchMessage = (order_id, start, length) => {
+    return query(`SELECT
+        message.msg,
+        message.time,
+        message.user_id,
+        message.order_id,
+        message.id
+        FROM
+        message
+        WHERE
+        message.order_id = ?
+        ORDER BY
+        message.time DESC
+        LIMIT ?, ?`, [order_id, start, length])
+}

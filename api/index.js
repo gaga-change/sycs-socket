@@ -63,4 +63,22 @@ router.get('/noreadmessagenum', (req, res, next) => {
 
 })
 
+/**
+ * 消息搜索借口
+ */
+router.get('/message', (req, res, next) => {
+    let orderId = req.query.orderId
+    let page = req.query.page
+    let pageSize = req.query.pageSize
+    if (orderId && page && pageSize) {
+        db.message.searchMessage(orderId, page, pageSize).then(rows => {
+            res.send({success: true, data: rows})
+        }).catch(err => {
+            res.send({success: false, err: err.toString()})
+        })
+    } else {
+        next()
+    }
+})
+
 module.exports = router

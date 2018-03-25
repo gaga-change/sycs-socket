@@ -1,4 +1,3 @@
-const User = require('../class/User')
 const data = require('./mysql')
 
 /**
