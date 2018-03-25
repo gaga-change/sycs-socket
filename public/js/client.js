@@ -9,41 +9,43 @@
     var userId = null // 用户id
     var openDoor = false // 会话是否建立连接（是否可以发送消息）
     var serviceId = null // 客服ID
-    $.get('/api/client/connect', {
-        godId: godId,
-        oid: oid,
-        username: username
-    }).then(res => {
-        if (res.success) {
-            userId = res.data.id
-            // 用户绑定
-            socket.emit('user bind', userId, function (userBindRes) {
-                if (userBindRes.success) {
-                    // 打开会话
-                    socket.emit('open the door', oid, function (openTheDoorRes) {
-                        if (openTheDoorRes.success) {
-                            console.log('可以发送消息了')
-                            openDoor = true
-                        } else {
-                            console.log('open the door error', openTheDoorRes.err)
-                        }
-                    })
-                } else {
-                    console.log('user bind error', userBindRes.err)
-                }
-            })
-        } else {
-            console.log('connect error')
-        }
-    })
     // 获取客服ID
     $.get('/api/service', {
         serviceQQ: serviceQQ
     }).then(res => {
         if (res.data) {
             serviceId = res.data.id
+            $.get('/api/client/connect', {
+                godId: godId,
+                oid: oid,
+                username: username,
+                serviceId: serviceId
+            }).then(res => {
+                if (res.success) {
+                    userId = res.data.id
+                    // 用户绑定
+                    socket.emit('user bind', userId, function (userBindRes) {
+                        if (userBindRes.success) {
+                            // 打开会话
+                            socket.emit('open the door', oid, function (openTheDoorRes) {
+                                if (openTheDoorRes.success) {
+                                    console.log('可以发送消息了')
+                                    openDoor = true
+                                } else {
+                                    console.log('open the door error', openTheDoorRes.err)
+                                }
+                            })
+                        } else {
+                            console.log('user bind error', userBindRes.err)
+                        }
+                    })
+                } else {
+                    console.log('connect error')
+                }
+            })
         }
     })
+    
     // 发送消息事件
     $('#SendBtn').click(function (e) {
         let msg = $('#MessageInput').val()

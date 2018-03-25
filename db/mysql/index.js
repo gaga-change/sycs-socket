@@ -47,6 +47,15 @@ exports.createConnect = (user_id, order_id) => {
         order_id
     }])
 }
+
+/**
+ * 查询连接
+ * @param {String} oid 订单ID
+ * @param {String} user_id 用户ID
+ */
+exports.findConnect = (oid, user_id) => {
+    return query(`SELECT user_room.leave_time, user_room.socket_num, user_room.user_id,user_room.order_id FROM user_room WHERE user_room.user_id = ? AND user_room.order_id = ?`, [user_id, oid])
+}
 /**
  * 连接数加1
  * @param {String} user_id 用户ID

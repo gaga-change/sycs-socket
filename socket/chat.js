@@ -13,6 +13,7 @@ module.exports = (io) => {
         // 给当前socket 标识用户
         socket.on('user bind', (userId, cb) => {
             console.log('user bind')
+            console.log(addUser, userId)
             if (!cb) return
             if (!addUser && userId) {
                 socket.userId = userId

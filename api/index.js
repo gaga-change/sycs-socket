@@ -10,8 +10,9 @@ router.get('/client/connect', (req, res, next) => {
     let godId = req.query.godId
     let oid = req.query.oid
     let username = req.query.username
-    if (godId && oid && username) {
-        db.user.clientConnect(godId, oid, username).then(user => {
+    let serviceId = req.query.serviceId
+    if (godId && oid && username && serviceId) {
+        db.user.clientConnect(godId, oid, username, serviceId).then(user => {
             res.send({
                 success: true,
                 data: user
