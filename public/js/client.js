@@ -46,7 +46,7 @@
             })
         }
     })
-    
+
     // 发送消息事件
     $('#SendBtn').click(function (e) {
         let msg = $('#MessageInput').val()
@@ -72,12 +72,30 @@
             }
         } else { // 客服消息
             console.log('客服消息')
+            appendOtherMessage(chatMessageRes.msg)
         }
     })
     // 追加消息
     function appendMyMessage(msg) {
         let msgEle = $(`<div>
             <div class="wrap-ip wrap_s">
+                <div class="wrap_fid">
+                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
+                        <i class="arrow"></i>
+                        <div class="hximg-tip">${msg}</div>
+                    </div>
+                </div>
+            </div>
+        </div>`)
+        $('#MessageContainer').append(msgEle)
+    }
+    // 追加其它消息
+    function appendOtherMessage(msg) {
+        let msgEle = $(`<div>
+            <div class="wrap-ip wrap_r">
+                <div class="wrap_img">
+                    <img src="./css/hxinkf-hd.png">
+                </div>
                 <div class="wrap_fid">
                     <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
                         <i class="arrow"></i>

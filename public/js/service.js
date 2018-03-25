@@ -10,18 +10,32 @@
     var openDoor = false // 会话是否开启，只有开启后才能发送消息
     var rooms = common.LS('SERVICE_ORDERS') || []
 
+    // 发送消息事件
+    $('#SendBtn').click(function (e) {
+        let msg = $('#MessageInput').val()
+        if (openDoor && userId && msg) {
+            socket.emit('chat message', msg, toUserId, function (chatMessageRes) {
+                if (chatMessageRes.success) {
+                    console.log('发送消息成功')
+                    appendMyMessage(msg)
+                } else {
+                    console.log('chat message error', chatMessageRes.err)
+                }
+            })
+        }
+    })
     // 接收消息
     socket.on('chat message', function (chatMessageRes) {
         // 接收到自己消息
-        if (chatMessageRes.userId == userId) {
-            
-            // if (chatMessageRes.oid == oid) {
-            //     appendMyMessage(chatMessageRes.msg)
-            // } else {
-            //     console.log('chat message 非当前会话')
-            // }
-        } else { // 顾客消息
-            console.log(chatMessageRes.msg, chatMessageRes.oid)
+        // 当前会话消息（更新聊天界面）， 非当前会话消息（更新菜单界面），当前会话消息但不是本页面会话消息（更新菜单界面）
+        if (chatMessageRes.oid == orderId) {
+            if (chatMessageRes.userId == userId) {
+                appendMyMessage(chatMessageRes.msg)
+            } else {
+                appendOtherMessage(chatMessageRes.msg)
+            }
+        } else {
+            console.log(chatMessageRes.msg, chatMessageRes.oid, chatMessageRes.userId)
             let target = $('#MenuLeft').find(`[data-oid=${chatMessageRes.oid}]`)
             target.find('[data-id=msg]').text(chatMessageRes.msg) // 最新消息
             console.log(target.find('[data-id=msg]'))
@@ -43,7 +57,23 @@
         </div>`)
         $('#MessageContainer').append(msgEle)
     }
-
+    // 追加其它消息
+    function appendOtherMessage(msg) {
+        let msgEle = $(`<div>
+            <div class="wrap-ip wrap_r">
+                <div class="wrap_img">
+                    <img src="./css/hxinkf-hd.png">
+                </div>
+                <div class="wrap_fid">
+                    <div class="wmessage " style="word-wrap:break-word;word-break:break-all;max-width:100%">
+                        <i class="arrow"></i>
+                        <div class="hximg-tip">${msg}</div>
+                    </div>
+                </div>
+            </div>
+        </div>`)
+        $('#MessageContainer').append(msgEle)
+    }
     // 用户绑定
     socket.emit('user bind', userId, function (userBindRes) {
         if (userBindRes.success) {
@@ -71,14 +101,17 @@
                 if (rooms.length > len) { // 超过的条数切除
                     rooms.splice(len - rooms.length)
                 }
-                rooms.splice()
-                common.LS('SERVICE_ORDERS', rooms)
+                saveRooms()
                 appendMenuLaft(rooms)
             }
         } else {
             console.log(res.err)
         }
     })
+    // 缓存会话菜单
+    function saveRooms() {
+        common.LS('SERVICE_ORDERS', rooms)
+    }
     // 点击左侧菜单项（房间）
     $('#MenuLeft').click(e => {
         if (!userBind) return
@@ -91,6 +124,11 @@
             toUsername = menuEle.attr('data-username')
             $('#MessageContainer').empty()
             $('#RoomContainer').show()
+            let check = rooms.filter(item => item.orderId == orderId)[0]
+            menuEle.find('[data-id=msg]').text('') // 最新消息
+             menuEle.find('[data-id=num]').find('small').text('0')
+            check.num = 0
+            saveRooms()
             if (openDoor) {
                 // 关闭之前的会话
                 socket.emit('close the door', function (closeTheDoorRes) {
