@@ -13,6 +13,16 @@
         }
         return ret
     }
+    // LS缓存级
+    function LS (key, data) {
+        if (data) {
+            localStorage.setItem(key, JSON.stringify(data))
+        } else {
+            let d = localStorage.getItem(key)
+            if (d) return JSON.parse(d)
+            else return null
+        }
+    }
     function turnKey(obj) {
         let newObj = {}
         for(let key in obj) {
@@ -28,6 +38,7 @@
     window.common = {
         getQuery,
         turnKey,
-        API: '/api'
+        API: '/api',
+        LS
     }
 })()

@@ -9,6 +9,7 @@
     var userId = null // 用户id
     var openDoor = false // 会话是否建立连接（是否可以发送消息）
     var serviceId = null // 客服ID
+
     // 获取客服ID
     $.get('/api/service', {
         serviceQQ: serviceQQ
