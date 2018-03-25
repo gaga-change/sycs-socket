@@ -114,7 +114,6 @@ exports.searchMessage = (order_id, start, length) => {
         message.msg,
         message.time,
         message.user_id,
-        message.order_id,
         message.id
         FROM
         message

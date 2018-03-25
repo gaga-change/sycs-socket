@@ -112,6 +112,31 @@
     function saveRooms() {
         common.LS('SERVICE_ORDERS', rooms)
     }
+    // 拉取消息记录
+    function getMessage() {
+        $.get(common.API + '/message', {
+            orderId: oid,
+            page,
+            pageSize
+        }).then(res => {
+            if (res.success) {
+                let msgArr = res.data.map(item => common.turnKey(item))
+                msgArr.unshift({
+                    msg: "您好，欢迎咨询5173M站。我们的接待时间为早上8: 00 - 次日01: 00"
+                })
+                msgArr.forEach(item => {
+                    if (item.userId == userId) {
+                        appendMyMessage(item.msg, true)
+                    } else {
+                        appendOtherMessage(item.msg, true)
+                    }
+                })
+                $('.wrap').scrollTop($('.wrap').prop("scrollHeight"))
+            } else {
+                console.log(res.err)
+            }
+        })
+    }
     // 点击左侧菜单项（房间）
     $('#MenuLeft').click(e => {
         if (!userBind) return

@@ -9,13 +9,15 @@
     var userId = null // 用户id
     var openDoor = false // 会话是否建立连接（是否可以发送消息）
     var serviceId = null // 客服ID
-
+    var page = 1 // 消息页数
+    var pageSize = 29 // 每页消息条数
     // 获取客服ID
     $.get('/api/service', {
         serviceQQ: serviceQQ
     }).then(res => {
         if (res.data) {
             serviceId = res.data.id
+            // 当前会话绑定用户
             $.get('/api/client/connect', {
                 godId: godId,
                 oid: oid,
@@ -32,6 +34,7 @@
                                 if (openTheDoorRes.success) {
                                     console.log('可以发送消息了')
                                     openDoor = true
+                                    getMessage()
                                 } else {
                                     console.log('open the door error', openTheDoorRes.err)
                                 }
@@ -46,7 +49,35 @@
             })
         }
     })
-
+    // 滚动条移至底部
+    function scrollBottom() {
+        $('.wrap').scrollTop($('.wrap').prop("scrollHeight"))
+    }
+    // 拉取消息记录
+    function getMessage() {
+        $.get(common.API + '/message', {
+            orderId: oid,
+            page,
+            pageSize
+        }).then(res => {
+            if (res.success) {
+                let msgArr = res.data.map(item => common.turnKey(item))
+                msgArr.unshift({
+                    msg: "您好，欢迎咨询5173M站。我们的接待时间为早上8: 00 - 次日01: 00"
+                })
+                msgArr.forEach(item => {
+                    if (item.userId == userId) {
+                        appendMyMessage(item.msg, true)
+                    } else {
+                        appendOtherMessage(item.msg, true)
+                    }
+                })
+                scrollBottom()
+            } else {
+                console.log(res.err)
+            }
+        })
+    }
     // 发送消息事件
     $('#SendBtn').click(function (e) {
         let msg = $('#MessageInput').val()
@@ -76,7 +107,7 @@
         }
     })
     // 追加消息
-    function appendMyMessage(msg) {
+    function appendMyMessage(msg, turn) {
         let msgEle = $(`<div>
             <div class="wrap-ip wrap_s">
                 <div class="wrap_fid">
@@ -87,10 +118,15 @@
                 </div>
             </div>
         </div>`)
-        $('#MessageContainer').append(msgEle)
+        if (turn) {
+            $('#MessageContainer').prepend(msgEle)
+        } else {
+            $('#MessageContainer').append(msgEle)
+        }
+        scrollBottom()
     }
     // 追加其它消息
-    function appendOtherMessage(msg) {
+    function appendOtherMessage(msg, turn) {
         let msgEle = $(`<div>
             <div class="wrap-ip wrap_r">
                 <div class="wrap_img">
@@ -104,6 +140,11 @@
                 </div>
             </div>
         </div>`)
-        $('#MessageContainer').append(msgEle)
+        if (turn) {
+            $('#MessageContainer').prepend(msgEle)
+        } else {
+            $('#MessageContainer').append(msgEle)
+        }
+        scrollBottom()
     }
 })()
