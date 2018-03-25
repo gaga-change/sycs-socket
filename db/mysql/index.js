@@ -88,3 +88,17 @@ exports.createMsg = (msg, user_id, order_id) => {
         order_id
     }])
 }
+
+/**
+ * 获取每个订单会话未读消息数量
+ * @param {String} user_id 用户ID
+ */
+exports.findNoReadMessageNum = (user_id) => {
+    return query(`SELECT
+            message.user_id AS from_user_id,
+            user.username AS from_username,
+            user_room.user_id,
+            user_room.order_id,
+            Count( * ) AS num FROM user_room INNER JOIN message ON message.order_id = user_room.order_id INNER JOIN user
+            ON message.user_id = user.id WHERE user_room.user_id = ? AND user_room.socket_num = 0 AND user_room.leave_time < message.time GROUP BY user_room.order_id `, [user_id])
+}

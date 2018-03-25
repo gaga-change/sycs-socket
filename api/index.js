@@ -39,7 +39,28 @@ router.get('/service', (req, res, next) => {
         next()
     }
 })
-// const apiRouter = express.Router()
-// apiRouter.use('/api', router)
+
+/**
+ * 获取未读消息结构
+ */
+router.get('/noreadmessagenum', (req, res, next) => {
+    let userId = req.query.userId
+    if (userId) {
+        db.user.noReadMessageNum(userId).then(obj => {
+            res.send({
+                success: true,
+                data: obj
+            })
+        }).catch(err => {
+            res.send({
+                success: false,
+                err: err.toString()
+            })
+        })
+    } else {
+        next()
+    }
+
+})
 
 module.exports = router

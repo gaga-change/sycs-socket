@@ -89,3 +89,11 @@ exports.clientLeaveConnect = (userId, oid) => {
 exports.createMsg = (userId, msg, oid) => {
     return data.createMsg(msg, userId, oid)
 }
+
+/**
+ * 获取未读消息数量
+ * @param {String} userId 用户ID
+ */
+exports.noReadMessageNum = (userId) => {
+    return data.findNoReadMessageNum(userId).then(rows => rows[0])
+}
